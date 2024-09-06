@@ -59,9 +59,7 @@
           />
           <p v-if="checkSum" style="color: red">密碼不一致</p>
           <input class="formControls_btnSubmit" type="button" @click="signUp" value="註冊帳號" />
-          <a class="formControls_btnLink" href="#/">登入</a>
-          {{ SingUpItem }}
-          {{ confirmPassword }}
+          <RouterLink to="/" class="formControls_btnLink">登入</RouterLink>
         </form>
       </div>
     </div>
@@ -71,6 +69,9 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
+import { RouterLink } from 'vue-router'
+import Swal from 'sweetalert2'
+import router from '@/router'
 const api = 'https://todolist-api.hexschool.io'
 const confirmPassword = ref('')
 
@@ -80,12 +81,31 @@ const SingUpItem = ref({
   nickname: ''
 })
 const signUp = async () => {
-  //  console.log(`${api}/users/sign_up`)
+  if (
+    SingUpItem.value.email == '' ||
+    SingUpItem.value.nickname == '' ||
+    SingUpItem.value.password == '' ||
+    confirmPassword.value == ''
+  ) {
+    alert(`填入的訊息不完整`)
+  }
   try {
     const res = await axios.post(`${api}/users/sign_up`, SingUpItem.value)
-    console.log(res)
+
+    if (res.data.status == true) {
+      Swal.fire({
+        title: '註冊成功',
+        icon: 'success',
+        confirmButtonText: '關閉',
+        timer: 2000,
+        willClose: () => {
+          // 在彈窗關閉後跳轉
+          router.push({ name: 'home' })
+        }
+      })
+    }
   } catch (error) {
-    console.log(error)
+    alert(`發生錯誤: ${error.response.data.message}`)
   }
 }
 const checkSum = computed(() => {

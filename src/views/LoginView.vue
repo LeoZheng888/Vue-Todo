@@ -42,8 +42,6 @@
           <input class="formControls_btnSubmit" type="button" @click="signIn" value="登入" />
 
           <a class="formControls_btnLink" href="#signUpPage">註冊帳號</a>
-
-          {{ signTemp }}
         </form>
       </div>
     </div>
@@ -64,23 +62,15 @@ const userStore = useCounterStore()
 const router = useRouter()
 
 const signIn = async () => {
-  /*  location.href = '#todoListPage' */
   try {
     const res = await axios.post(`${api}/users/sign_in`, signTemp.value)
-    console.log('res:', res)
 
     signRes.value = res.data.token
 
     document.cookie = `someCookieName=${res.data.token};`
-    //  console.log('名子:', res.data.nickname)
-    /*  if (res.data.status === true) {
-      console.log('123', userStore.setNickName)
-      router.push('/todoListPage')
-    } */
+
     if (res.data.nickname) {
-      console.log('Calling setNickName with:', res.data.nickname)
       userStore.setNickName(res.data.nickname)
-      console.log('Updated nickName in store:', userStore.nickName) // 確認 nickName 是否更新
       router.push('/todoListPage')
     }
   } catch (error) {
